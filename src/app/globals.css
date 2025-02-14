@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,7 +17,18 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--background);
+  background: #000;
   font-family: Arial, Helvetica, sans-serif;
+  
+}
+
+
+.pacifico-regular {
+  font-family: "Pacifico", serif;
+  font-style: normal;
+}
+
+.smooth3{
+transition: all 0.3s ease-in-out;
 }
