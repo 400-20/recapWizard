@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { gsap } from "gsap";
 import { FcGoogle } from "react-icons/fc";
 import { GiCancel } from "react-icons/gi";
+
 
 
 interface AuthModalProps {
@@ -14,6 +16,8 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
+    const { data: session }:any = useSession();
+
     const [isLogin] = useState<boolean>(true);
     const modalRef = useRef(null);
 
@@ -27,9 +31,52 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         }
     }, [isOpen]);
 
-    const handleGoogleSignIn = () => {
-        signIn("google", { callbackUrl: "/dashboard" });
+
+    useEffect(() => {
+        if (session?.user) {
+            const hasLoggedIn = localStorage.getItem("hasLoggedIn");
+    
+            if (!hasLoggedIn) {
+                const saveUserToDB = async () => {
+                    try {
+                        const response = await fetch("/api/mongo/saveUser", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                name: session.user.name,
+                                email: session.user.email,
+                                image: session.user.image,
+                            }),
+                        });
+    
+                        const data = await response.json();
+    
+                        if (response.ok) {
+                            localStorage.setItem("hasLoggedIn", "true"); 
+                            window.location.href = "/dashboard"; 
+                        } else {
+                            console.error("Error saving user:", data.error);
+                        }
+                    } catch (error) {
+                        console.error("Request failed:", error);
+                    }
+                };
+    
+                saveUserToDB();
+            }
+        }
+    }, [session]);
+    
+    
+    
+
+    const handleGoogleSignIn = async () => {
+        await signIn("google", { redirect: false });
     };
+    
+    
 
     return (
         <AnimatePresence>
@@ -60,16 +107,6 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                         >
                             <FcGoogle size={24} /> Continue with Google
                         </button>
-
-                        {/* <p className="text-center mt-4">
-                            {isLogin ? "Don't have an account? " : "Already have an account? "}
-                            <button
-                                className="text-blue-500 hover:underline"
-                                onClick={() => setIsLogin(!isLogin)}
-                            >
-                                {isLogin ? "Sign Up" : "Login"}
-                            </button>
-                        </p> */}
                     </motion.div>
                 </motion.div>
             )}

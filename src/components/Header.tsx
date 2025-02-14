@@ -26,28 +26,33 @@ export default function Header() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                className="  button"
               >
-                Dashboard
+                  <span className="button-content">Dashboard </span>
               </motion.button>
+
             </Link>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-              onClick={() => signOut()}
+              className="button "
+              onClick={() => {
+                localStorage.removeItem("hasLoggedIn"); 
+                signOut();
+            }}
+            
             >
-              Sign Out
+            <span className="button-content"> Sign Out   </span>
             </motion.button>
           </div>
         ) : (
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            className="  button"
             onClick={() => setIsModalOpen(true)}
           >
-            Login / Sign Up
+          <span className="button-content"> Login / Sign Up </span>
           </motion.button>
         )}
       </div>
