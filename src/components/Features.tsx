@@ -7,8 +7,8 @@ import { motion } from "framer-motion"
 const FeatureCard = ({ icon, title, description, delay }: any) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, }}
+      whileInView={{ opacity: 1,}}
       transition={{ duration: 0.6, delay }}
       viewport={{ once: true }}
       className="bg-gray-800 p-6 rounded-lg shadow-lg hover:scale-105 transition-transform"
@@ -16,7 +16,7 @@ const FeatureCard = ({ icon, title, description, delay }: any) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         whileInView={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: delay + 0.2 }}
+        transition={{ duration: 0.5, delay: delay}}
         className="text-blue-500 mb-4"
       >
         {icon}

@@ -2,47 +2,71 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
+import { useSession } from "next-auth/react"
+import LoadingSpinner from "@/components/LoadingSpinner"
+import { toast } from "react-hot-toast"
 
 interface Recording {
-  id: string
-  name: string
-  date: string
-  duration: string
+  _id: string
+  originalName: string
+  createdAt: string
+  path: string
 }
 
 export default function SavedRecordings() {
   const [recordings, setRecordings] = useState<Recording[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const { data: session } = useSession()
 
   useEffect(() => {
-    // Here you would fetch the user's saved recordings from your backend
-    // For now, we'll use mock data
-    const mockRecordings: Recording[] = [
-      { id: "1", name: "Team Meeting", date: "2024-02-14", duration: "1:30:00" },
-      { id: "2", name: "Client Call", date: "2024-02-13", duration: "45:00" },
-      { id: "3", name: "Project Review", date: "2024-02-12", duration: "1:00:00" },
-    ]
-    setRecordings(mockRecordings)
-  }, [])
+    const fetchRecordings = async () => {
+      if (!session) return
+
+      try {
+        const response = await fetch("/api/recordings")
+        if (!response.ok) {
+          throw new Error("Failed to fetch recordings")
+        }
+        const data = await response.json()
+        setRecordings(data)
+      } catch (error) {
+        console.error("Error fetching recordings:", error)
+        toast.error("Failed to load recordings. Please try again.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchRecordings()
+  }, [session])
+
+  if (!session) {
+    return <div>Please sign in to view your saved recordings.</div>
+  }
 
   return (
-    <div>
+    <div className="space-y-8">
       <h1 className="text-2xl font-bold mb-4">Saved Recordings</h1>
-      <div className="space-y-4">
-        {recordings.map((recording) => (
-          <motion.div key={recording.id} whileHover={{ scale: 1.02 }} className="bg-white p-4 rounded shadow">
-            <h2 className="text-lg font-semibold">{recording.name}</h2>
-            <p className="text-sm text-gray-500">Date: {recording.date}</p>
-            <p className="text-sm text-gray-500">Duration: {recording.duration}</p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="mt-2 px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-sm"
-            >
-              View Summary
-            </motion.button>
-          </motion.div>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {recordings.map((recording) => (
+            <motion.div key={recording._id} whileHover={{ scale: 1.05 }} className="bg-white p-4 rounded-lg shadow">
+              <h2 className="text-lg font-semibold mb-2">{recording.originalName}</h2>
+              <p className="text-sm text-gray-500 mb-2">
+                Recorded on: {new Date(recording.createdAt).toLocaleString()}
+              </p>
+              <Link href={`/dashboard/recording/${recording._id}`}>
+                <a className="text-blue-500 hover:text-blue-700">View Details</a>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

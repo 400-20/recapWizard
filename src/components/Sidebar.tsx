@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { Mic, Upload, List, Settings } from "lucide-react"
+import { Mic, Upload, List } from "lucide-react"
 import { LuLogOut } from "react-icons/lu";
 import {signOut } from "next-auth/react"
 
@@ -10,7 +10,6 @@ const sidebarItems = [
     { name: "Record Meeting", icon: Mic, href: "/dashboard/record" },
     { name: "Upload Recording", icon: Upload, href: "/dashboard/upload" },
     { name: "Saved Recordings", icon: List, href: "/dashboard/recordings" },
-    { name: "Settings", icon: Settings, href: "/dashboard/settings" },
 ]
 
 export default function Sidebar() {
@@ -18,7 +17,7 @@ export default function Sidebar() {
     return (
         <aside className="bg-gray-800 text-white w-64 min-h-screen p-4">
             <nav>
-            <Link href="/" className="text-2xl pacifico-regular font-light w-full text-center mb-2">
+            <Link href="/" className="text-2xl pacifico-regular font-light w-full text-center  flex items-center justify-center mb-5">
           Recap Wizard
         </Link>
                 <ul>
